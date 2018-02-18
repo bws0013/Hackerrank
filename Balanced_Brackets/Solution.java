@@ -10,7 +10,19 @@ public class Solution {
 
     public static boolean isBalanced(String expression) {
 
+      // System.out.println(expression);
+
       Stack<Character> stack = new Stack<Character>();
+
+      if(expression.length() % 2 == 1) {
+        return false;
+      } else if (expression.charAt(0) == '}') {
+        return false;
+      } else if (expression.charAt(0) == ']') {
+        return false;
+      } else if (expression.charAt(0) == ')') {
+        return false;
+      }
 
       char current;
       for(int i = 0; i < expression.length(); i++) {
@@ -22,11 +34,18 @@ public class Solution {
         } else if(current == '[') {
           stack.push(']');
         } else {
-          if(current != stack.pop()) {
+          if(stack.size() == 0) {
+            return false;
+          } else if(current != stack.pop()) {
             return false;
           }
         }
       }
+
+      if(stack.size() != 0) {
+        return false;
+      }
+
       return true;
     }
 
