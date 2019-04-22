@@ -8,15 +8,17 @@ import java.util.regex.*;
 
 public class Solution {
 
+    static Map<Integer,Integer> position_to_occurances = new HashMap<>();
+
     // Complete the freqQuery function below.
     static List<Integer> freqQuery(List<List<Integer>> queries) {
 
       List<Integer> results = new ArrayList<>();
 
       Map<Integer,Integer> num_to_count = new HashMap<>();
-      Map<Integer,Integer> occurences_to_count = new HashMap<>();
 
-      occurences_to_count.put(0, 0);
+      // occurences_to_count.put(0, 0);
+      position_to_occurances.put(0, 1);
 
       for(List<Integer> l : queries) {
         int op = l.get(0);
@@ -25,61 +27,22 @@ public class Solution {
         if(op == 1) {
           if(num_to_count.containsKey(num)) {
             int count = num_to_count.get(num);
-            count++;
-            // --------------------------------
-            if(occurences_to_count.containsKey(count)) {
-              int c = occurences_to_count.get(count);
-              c++;
-              occurences_to_count.put(count, c);
-              c = occurences_to_count.get(count - 1);
-              if(c > 0) {
-                c--;
-                occurences_to_count.put(count - 1, c);
-              }
-            } else {
-              occurences_to_count.put(count,1);
-            }
-            // --------------------------------
 
+            change_position_map(count,true);
+            count++;
 
             num_to_count.put(num, count);
           } else {
             num_to_count.put(num, 1);
 
-            int count = 1;
-            // --------------------------------
-            if(occurences_to_count.containsKey(count)) {
-              int c = occurences_to_count.get(count);
-              c++;
-              occurences_to_count.put(count, c);
-              c = occurences_to_count.get(count - 1);
-              if(c > 0) {
-                c--;
-                occurences_to_count.put(count - 1, c);
-              }
-            } else {
-              occurences_to_count.put(count,1);
-            }
-            // --------------------------------
+            int count = 0;
+            change_position_map(count,true);
           }
         } else if(op == 2) {
           if(num_to_count.containsKey(num) && num_to_count.get(num) > 0) {
             int count = num_to_count.get(num);
 
-            // --------------------------------
-            if(occurences_to_count.containsKey(count)) {
-              int c = occurences_to_count.get(count);
-              if(c > 0) {
-                c--;
-              }
-              occurences_to_count.put(count, c);
-              c = occurences_to_count.get(count - 1);
-              if(c > 0) {
-                c--;
-                occurences_to_count.put(count - 1, c);
-              }
-            }
-            // --------------------------------
+            change_position_map(count,false);
 
             count--;
             num_to_count.put(num, count);
@@ -99,11 +62,11 @@ public class Solution {
           //   results.add(0);
           // }
 
-          if(occurences_to_count.containsKey(num) && occurences_to_count.get(num) > 0) {
-            System.out.println(1);
+          if(position_to_occurances.containsKey(num) && position_to_occurances.get(num) > 0) {
+            // System.out.println(1);
             results.add(1);
           } else {
-            System.out.println(0);
+            // System.out.println(0);
             results.add(0);
           }
 
@@ -112,6 +75,45 @@ public class Solution {
 
       return results;
 
+    }
+
+    // Given the pre-incremented position add to the map
+    public static void change_position_map(int n, boolean add) {
+      if(add == true) {
+        if(position_to_occurances.containsKey(n)) {
+          int occurances = position_to_occurances.get(n);
+          if(occurances > 0) {
+            position_to_occurances.put(n, occurances - 1);
+          }
+
+          if(position_to_occurances.containsKey(n + 1)) {
+              occurances = position_to_occurances.get(n + 1);
+              occurances++;
+              position_to_occurances.put(n + 1, occurances);
+          } else {
+            position_to_occurances.put(n + 1, 1);
+          }
+
+        } else {
+          position_to_occurances.put(n, 1);
+        }
+
+      } else {
+
+        if(position_to_occurances.containsKey(n)) {
+          int occurances = position_to_occurances.get(n);
+          if(occurances > 0) {
+            occurances--;
+            position_to_occurances.put(n, occurances);
+            if(position_to_occurances.containsKey(n - 1)) { // This feels questionable
+              occurances = position_to_occurances.get(n - 1);
+              occurances++;
+              position_to_occurances.put(n - 1, occurances);
+            }
+          }
+        }
+
+      }
     }
 
     public static void main(String[] args) throws IOException {
